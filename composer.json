@@ -2,6 +2,7 @@
     "name": "pfazzi/simplex-mapper",
     "description": "A simple mapping library",
     "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "pfazzi",

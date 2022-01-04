@@ -1,0 +1,52 @@
+name: CI
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build:
+    name: Build
+    runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        php-versions: [ '8.0', '8.1' ]
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: composer:v2, cs2pr
+          coverage: none
+        env:
+          update: true
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run PHP CS Fixer
+        if: matrix.php-versions == '8.0'
+        run: |
+          composer install --working-dir=tools/php-cs-fixer
+          tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --dry-run  --config .php-cs-fixer.dist.php -v
+        env:
+          PHP_CS_FIXER_IGNORE_ENV: true
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Download dependencies
+        run: composer install -o --ignore-platform-reqs
+
+      - name: Run Psalm
+        run: ./vendor/bin/psalm --output-format=github
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit
