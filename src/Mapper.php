@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Pfazzi\SimplexMapper;
@@ -33,7 +34,7 @@ class Mapper
             $sourceRef = new \ReflectionClass($source);
             foreach ($sourceRef->getProperties() as $reflectionProperty) {
                 $name = $reflectionProperty->getName();
-                if (PHP_MAJOR_VERSION  < 8 || PHP_MINOR_VERSION === 0) {
+                if (PHP_MAJOR_VERSION < 8 || PHP_MINOR_VERSION === 0) {
                     $reflectionProperty->setAccessible(true);
                 }
                 $value = $reflectionProperty->getValue($source);
@@ -67,7 +68,6 @@ class Mapper
                             try {
                                 $value = self::cast($value, $propertyTypeNames[0]);
                             } catch (\Exception $exception) {
-
                             }
                         }
                         $propertyTypeNames = implode('|', $propertyTypeNames);
@@ -99,7 +99,7 @@ class Mapper
             return $this->map($value, $type);
         }
 
-        if (settype($value, $type)){
+        if (settype($value, $type)) {
             return $value;
         }
 

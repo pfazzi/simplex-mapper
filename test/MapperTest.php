@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Pfazzi\SimplexMapper\Test;
@@ -196,45 +197,45 @@ class MapperTest extends TestCase
     public function test_it_maps_bool_values(): void
     {
         $source = [
-            'boolProp' => true
+            'boolProp' => true,
         ];
 
         $mapped = $this->mapper->map($source, ClassWithFields::class);
 
-        self::assertEquals(new ClassWithFields(boolProp: true),$mapped);
+        self::assertEquals(new ClassWithFields(boolProp: true), $mapped);
     }
 
     public function test_it_maps_array_values(): void
     {
         $source = [
-            'arrayProp' => ['ciao', 'hola' => 'sp']
+            'arrayProp' => ['ciao', 'hola' => 'sp'],
         ];
 
         $mapped = $this->mapper->map($source, ClassWithFields::class);
 
-        self::assertEquals(new ClassWithFields(arrayProp: ['ciao', 'hola' => 'sp']),$mapped);
+        self::assertEquals(new ClassWithFields(arrayProp: ['ciao', 'hola' => 'sp']), $mapped);
     }
 
     public function test_it_maps_float_values(): void
     {
         $source = [
-            'floatProp' => 5.7
+            'floatProp' => 5.7,
         ];
 
         $mapped = $this->mapper->map($source, ClassWithFields::class);
 
-        self::assertEquals(new ClassWithFields(floatProp: 5.7),$mapped);
+        self::assertEquals(new ClassWithFields(floatProp: 5.7), $mapped);
     }
 
     public function test_it_maps_union_types(): void
     {
         $source = [
-            'unionType' => 'ciao'
+            'unionType' => 'ciao',
         ];
 
         $mapped = $this->mapper->map($source, ClassWithFields::class);
 
-        self::assertEquals(new ClassWithFields(unionType: 'ciao'),$mapped);
+        self::assertEquals(new ClassWithFields(unionType: 'ciao'), $mapped);
     }
 
     public function test_it_is_unable_to_map_intersection_types(): void
@@ -246,7 +247,7 @@ class MapperTest extends TestCase
         self::expectExceptionObject(new \RuntimeException('Unable to deserialize intersection types'));
 
         $source = [
-            'intersectionType' => new CarAndTruck()
+            'intersectionType' => new CarAndTruck(),
         ];
 
         $this->mapper->map($source, ClassWithFields81::class);
@@ -257,7 +258,7 @@ class MapperTest extends TestCase
         self::expectExceptionObject(new \RuntimeException('Unable to map int key'));
 
         $source = [
-            4 => 'ciao'
+            4 => 'ciao',
         ];
 
         $this->mapper->map($source, ClassWithFields::class);
