@@ -192,4 +192,74 @@ class MapperTest extends TestCase
 
         self::assertEquals($expected, $mapped);
     }
+
+    public function test_it_maps_bool_values(): void
+    {
+        $source = [
+            'boolProp' => true
+        ];
+
+        $mapped = $this->mapper->map($source, ClassWithFields::class);
+
+        self::assertEquals(new ClassWithFields(boolProp: true),$mapped);
+    }
+
+    public function test_it_maps_array_values(): void
+    {
+        $source = [
+            'arrayProp' => ['ciao', 'hola' => 'sp']
+        ];
+
+        $mapped = $this->mapper->map($source, ClassWithFields::class);
+
+        self::assertEquals(new ClassWithFields(arrayProp: ['ciao', 'hola' => 'sp']),$mapped);
+    }
+
+    public function test_it_maps_float_values(): void
+    {
+        $source = [
+            'floatProp' => 5.7
+        ];
+
+        $mapped = $this->mapper->map($source, ClassWithFields::class);
+
+        self::assertEquals(new ClassWithFields(floatProp: 5.7),$mapped);
+    }
+
+    public function test_it_maps_union_types(): void
+    {
+        $source = [
+            'unionType' => 'ciao'
+        ];
+
+        $mapped = $this->mapper->map($source, ClassWithFields::class);
+
+        self::assertEquals(new ClassWithFields(unionType: 'ciao'),$mapped);
+    }
+
+    public function test_it_is_unable_to_map_intersection_types(): void
+    {
+        if (PHP_MAJOR_VERSION === 8 && PHP_MINOR_VERSION < 1) {
+            self::markTestSkipped();
+        }
+
+        self::expectExceptionObject(new \RuntimeException('Unable to deserialize intersection types'));
+
+        $source = [
+            'intersectionType' => new CarAndTruck()
+        ];
+
+        $this->mapper->map($source, ClassWithFields81::class);
+    }
+
+    public function test_it_trows_error_if_array_key_is_numeric(): void
+    {
+        self::expectExceptionObject(new \RuntimeException('Unable to map int key'));
+
+        $source = [
+            4 => 'ciao'
+        ];
+
+        $this->mapper->map($source, ClassWithFields::class);
+    }
 }

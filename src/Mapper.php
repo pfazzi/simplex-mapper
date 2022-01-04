@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace Pfazzi\SimplexMapper;
 
+/** @psalm-suppress MixedAssignment */
 class Mapper
 {
+    /**
+     * @psalm-param class-string $target
+     */
     public function map(array|object $source, string $target, ?NameConverter $nameConverter = null): object
     {
         $ref = new \ReflectionClass($target);
@@ -29,12 +33,10 @@ class Mapper
             $sourceRef = new \ReflectionClass($source);
             foreach ($sourceRef->getProperties() as $reflectionProperty) {
                 $name = $reflectionProperty->getName();
-                $private = $reflectionProperty->isPrivate();
-                $reflectionProperty->setAccessible(true);
-                $value = $reflectionProperty->getValue($source);
-                if ($private) {
-                    $reflectionProperty->setAccessible(false);
+                if (PHP_MAJOR_VERSION  < 8 || PHP_MINOR_VERSION === 0) {
+                    $reflectionProperty->setAccessible(true);
                 }
+                $value = $reflectionProperty->getValue($source);
                 $sourceArray[$name] = $value;
             }
         } else {
@@ -42,6 +44,9 @@ class Mapper
         }
 
         foreach ($sourceArray as $property => $value) {
+            if (!is_string($property)) {
+                throw new \RuntimeException('Unable to map int key');
+            }
             if ($nameConverter) {
                 $property = $nameConverter->convert($property);
             }
@@ -52,13 +57,33 @@ class Mapper
                     $valueType = $value::class;
                 }
 
-                $propertyTypeName = $propertyType->getName();
-                if ($propertyTypeName !== $valueType) {
-                    try {
-                        $value = self::cast($value, $propertyTypeName);
-                    } catch (\Exception $exception) {
-                        throw new \RuntimeException("Unable to cast '$valueType' to '$propertyType': {$exception->getMessage()}");
+                if ($propertyType instanceof \ReflectionUnionType) {
+                    $propertyTypeNames = array_map(
+                        fn (\ReflectionNamedType $t): string => $t->getName(),
+                        $propertyType->getTypes()
+                    );
+                    if (!in_array($valueType, $propertyTypeNames)) {
+                        foreach ($propertyTypeNames as $propertyTypeName) {
+                            try {
+                                $value = self::cast($value, $propertyTypeNames[0]);
+                            } catch (\Exception $exception) {
+
+                            }
+                        }
+                        $propertyTypeNames = implode('|', $propertyTypeNames);
+                        throw new \RuntimeException("Unable to cast '$valueType' to '$propertyTypeNames'}");
                     }
+                } elseif ($propertyType instanceof \ReflectionNamedType) {
+                    $propertyTypeName = $propertyType->getName();
+                    if ($propertyTypeName !== $valueType) {
+                        try {
+                            $value = self::cast($value, $propertyTypeName);
+                        } catch (\Exception $exception) {
+                            throw new \RuntimeException("Unable to cast '$valueType' to '$propertyType': {$exception->getMessage()}");
+                        }
+                    }
+                } else {
+                    throw new \RuntimeException('Unable to deserialize intersection types');
                 }
             }
 
@@ -74,10 +99,10 @@ class Mapper
             return $this->map($value, $type);
         }
 
-        return match ($type) {
-            'int' => (int) $value,
-            'float' => (float) $value,
-            default => throw new \RuntimeException("Unhandled type '$type'"),
-        };
+        if (settype($value, $type)){
+            return $value;
+        }
+
+        throw new \RuntimeException("Unhandled type '$type'");
     }
 }
