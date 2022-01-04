@@ -1,0 +1,30 @@
+{
+    "name": "pfazzi/simplex-mapper",
+    "description": "A simple mapping library",
+    "type": "library",
+    "authors": [
+        {
+            "name": "pfazzi",
+            "email": "patrick91@live.it"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Pfazzi\\SimplexMapper\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pfazzi\\SimplexMapper\\Test\\": "test/"
+        }
+    },
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
