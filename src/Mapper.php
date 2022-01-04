@@ -26,13 +26,13 @@ class Mapper
         $sourceArray = $this->mapSourceToArray($source);
 
         foreach ($sourceArray as $propertyName => $value) {
-            $this->assertPropertyIsString($propertyName);
+            $this->assertPropertyNameIsString($propertyName);
 
             if ($nameConverter) {
                 $propertyName = $nameConverter->convert($propertyName);
             }
 
-            $value = $this->convertValueForTarget($targetClassRef, $propertyName, $value);
+            $value = $this->convertValueToTargetType($targetClassRef, $propertyName, $value);
 
             $assign->call($instance, $propertyName, $value);
         }
@@ -88,7 +88,7 @@ class Mapper
     /**
      * @psalm-assert string $property
      */
-    private function assertPropertyIsString(mixed $property): void
+    private function assertPropertyNameIsString(mixed $property): void
     {
         if (!is_string($property)) {
             throw new \RuntimeException('Unable to map int key');
@@ -106,7 +106,7 @@ class Mapper
         return $sourceArray;
     }
 
-    private function convertValueForTarget(\ReflectionClass $classRef, string $propertyName, mixed $value): mixed
+    private function convertValueToTargetType(\ReflectionClass $classRef, string $propertyName, mixed $value): mixed
     {
         $property = $classRef->getProperty($propertyName);
         $propertyType = $property->getType();
