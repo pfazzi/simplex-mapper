@@ -263,4 +263,15 @@ class MapperTest extends TestCase
 
         $this->mapper->map($source, ClassWithFields::class);
     }
+
+    public function test_maps_interfaces_on_interfaces(): void
+    {
+        $source = [
+            'car' => new Alfa147(),
+        ];
+
+        $mapped = $this->mapper->map($source, Garage::class);
+
+        self::assertEquals(new Garage(new Alfa147()), $mapped);
+    }
 }

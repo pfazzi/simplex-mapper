@@ -164,7 +164,7 @@ class Mapper
     private function convertValueForNamedType(\ReflectionNamedType $propertyType, string $valueType, mixed $value): mixed
     {
         $propertyTypeName = $propertyType->getName();
-        if ($propertyTypeName === $valueType) {
+        if ($propertyTypeName === $valueType || is_a($value, $propertyTypeName)) {
             return $value;
         }
 
