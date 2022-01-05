@@ -3,3 +3,8 @@ cs-fix:
 
 psalm:
 	./vendor/bin/psalm
+
+test:
+	./vendor/bin/phpunit
+
+build: cs-fix psalm test

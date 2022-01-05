@@ -10,9 +10,13 @@ namespace Pfazzi\SimplexMapper;
 class Mapper
 {
     /**
-     * @psalm-param class-string $target
+     * @template T
+     *
+     * @param class-string<T> $target
      *
      * @throws \ReflectionException
+     *
+     * @return T
      */
     public function map(array|object $source, string $target, ?NameConverter $nameConverter = null): object
     {
