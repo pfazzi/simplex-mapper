@@ -17,14 +17,14 @@ $mapper = new \Pfazzi\SimplexMapper\Mapper();
 
 // From Array 
 
-$someClassInstance = $mapper->map(source: ['name' => 'patrick'], target: SomeClass::class);
+$someClassInstance = $mapper->map(source: ['name' => 'patrick'], target: UserEntity::class);
 
 // From stdClass 
 
 $rawData = new \stdClass();
 $rawData->name = 'Patrick';
 
-$someClassInstance = $mapper->map(source: $rawData, target: SomeClass::class);
+$someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
 
 // From anonymous class
 
@@ -32,13 +32,13 @@ $rawData = new class {
     public function __construct(private string $name = 'Patrick') {}
 };
 
-$someClassInstance = $mapper->map(source: $rawData, target: SomeClass::class);
+$someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
 
 // From object
 
-$rawData = new UserEntity('Patrick');
+$rawData = new UserDto('Patrick');
 
-$someClassInstance = $mapper->map(source: $rawData, target: SomeClass::class);
+$someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
 ```
 
 ## Use Cases
