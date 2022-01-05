@@ -9,6 +9,8 @@ namespace Pfazzi\SimplexMapper;
  */
 class Mapper
 {
+    const SETTYPE_ALLOWED_VALUES = ['bool', 'boolean', 'int', 'integer', 'float', 'double', 'string', 'array', 'object', 'null'];
+
     /**
      * @template T
      *
@@ -50,11 +52,15 @@ class Mapper
             return $this->map($value, $type);
         }
 
+        if (!in_array($type, self::SETTYPE_ALLOWED_VALUES)) {
+            throw new \RuntimeException("Unhandled type '$type'. Allowed types are: ".implode(', ', self::SETTYPE_ALLOWED_VALUES));
+        }
+
         if (settype($value, $type)) {
             return $value;
         }
 
-        throw new \RuntimeException("Unhandled type '$type'");
+        throw new \RuntimeException("Unable to convert to '$type'");
     }
 
     private function assignDefaultValuesToTargetObject(\ReflectionClass $targetClassRef, \Closure $assigner, object $instance): void
@@ -164,7 +170,12 @@ class Mapper
     private function convertValueForNamedType(\ReflectionNamedType $propertyType, string $valueType, mixed $value): mixed
     {
         $propertyTypeName = $propertyType->getName();
-        if ($propertyTypeName === $valueType || (class_exists($propertyTypeName) && is_a($value, $propertyTypeName))) {
+        if ($propertyTypeName === $valueType) {
+            return $value;
+        }
+
+        $isClassOrInterface = class_exists($propertyTypeName) || interface_exists($propertyTypeName);
+        if ($isClassOrInterface && is_a($value, $propertyTypeName)) {
             return $value;
         }
 
