@@ -12,6 +12,10 @@ composer require pfazzi/simplex-mapper
 
 ## Usage
 
+### Map
+
+Maps the source data to a new instance of the target class
+
 ```php
 $mapper = new \Pfazzi\SimplexMapper\Mapper();
 
@@ -39,6 +43,41 @@ $someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
 $rawData = new UserDto('Patrick');
 
 $someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
+```
+
+### Hydrate
+
+Hydrates an object instance with data from the source:
+
+```php
+$mapper = new \Pfazzi\SimplexMapper\Mapper();
+
+$userEntity = $entityManager->find(UserEntity::class, 1);
+
+// From Array 
+
+$mapper->hydrate(source: ['name' => 'patrick'], target: $userEntity);
+
+// From stdClass 
+
+$rawData = new \stdClass();
+$rawData->name = 'Patrick';
+
+$mapper->map(source: $rawData, target: $userEntity);
+
+// From anonymous class
+
+$rawData = new class {
+    public function __construct(private string $name = 'Patrick') {}
+};
+
+$mapper->map(source: $rawData, target: $userEntity);
+
+// From object
+
+$rawData = new UserDto('Patrick');
+
+$mapper->map(source: $rawData, target: $userEntity);
 ```
 
 ## Use Cases
