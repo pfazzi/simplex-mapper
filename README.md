@@ -18,6 +18,15 @@ $user = $mapper->map(
 );
 ```
 
+## Features
+
+- Easy to use
+- Zero configuration
+- Zero dependencies
+- Supports PHP 8 union types
+- Supports nested objects
+- Uses reflection, no need to modify your objects
+
 ## Installation
 
 Install SimplexMapper with composer
@@ -25,13 +34,6 @@ Install SimplexMapper with composer
 ```bash
 composer require pfazzi/simplex-mapper
 ```
-
-## Features
-
-- Easy to use
-- Zero configuration
-- Zero dependencies
-- Supports PHP 8 union types
 
 ## Usage
 
