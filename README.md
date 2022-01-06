@@ -26,6 +26,13 @@ Install SimplexMapper with composer
 composer require pfazzi/simplex-mapper
 ```
 
+## Features
+
+- Easy to use
+- Zero configuration
+- Zero dependencies
+- Supports PHP 8 union types
+
 ## Usage
 
 ### Map
@@ -117,7 +124,7 @@ $result = $connection->executeQuery(<<<'SQL'
     SELECT
         supplier.id,
         supplier.tax_id AS taxId,
-        supplier.on_consignment AS onConsignment
+        supplier.is_enabled AS isEnabled
     FROM supplier
     WHERE supplier.tax_id = :taxId
 SQL, ['taxId' => $taxId]);
@@ -131,7 +138,7 @@ Without SimplexMapper you have to write mapping code, such as:
 $readModel = new Supplier(
     (int) $data['id'],
     $data['taxId'],
-    '1' == $data['onConsignment'],
+    '1' == $data['isEnabled'],
 );
 ```
 
