@@ -35,7 +35,7 @@ class Mapper
     }
 
     /**
-     * @template T
+     * @template T of object
      *
      * @psalm-param class-string<T> $target
      *
