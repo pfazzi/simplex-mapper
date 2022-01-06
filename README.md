@@ -1,6 +1,22 @@
 # SimplexMapper
 
-A simple PHP library to map data from one object to another.
+A simple PHP library to map data from a source (object or array) to an object.
+
+```php
+$dbData = [
+    'username' => 'pfazzi',
+    'email_address' => 'pfazzi@test.com',
+    'is_enabled' => '1',
+];
+
+$mapper = new \Pfazzi\SimplexMapper\Mapper();
+
+$user = $mapper->map(
+    source: $dbData, 
+    target: User::class, 
+    nameConverter: new SnakeToCamel()
+);
+```
 
 ## Installation
 
@@ -21,14 +37,14 @@ $mapper = new \Pfazzi\SimplexMapper\Mapper();
 
 // From Array 
 
-$someClassInstance = $mapper->map(source: ['name' => 'patrick'], target: UserEntity::class);
+$userEntity = $mapper->map(source: ['name' => 'patrick'], target: UserEntity::class);
 
 // From stdClass 
 
 $rawData = new \stdClass();
 $rawData->name = 'Patrick';
 
-$someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
+$userEntity = $mapper->map(source: $rawData, target: UserEntity::class);
 
 // From anonymous class
 
@@ -36,13 +52,13 @@ $rawData = new class {
     public function __construct(private string $name = 'Patrick') {}
 };
 
-$someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
+$userEntity = $mapper->map(source: $rawData, target: UserEntity::class);
 
 // From object
 
 $rawData = new UserDto('Patrick');
 
-$someClassInstance = $mapper->map(source: $rawData, target: UserEntity::class);
+$userEntity = $mapper->map(source: $rawData, target: UserEntity::class);
 ```
 
 ### Hydrate

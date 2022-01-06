@@ -17,6 +17,23 @@ class MapperTest extends TestCase
         $this->mapper = new Mapper();
     }
 
+    public function test_demo(): void
+    {
+        $dbData = [
+            'username' => 'pfazzi',
+            'email_address' => 'pfazzi@test.com',
+            'is_enabled' => '1',
+        ];
+
+        $user = $this->mapper->map(
+            source: $dbData,
+            target: User::class,
+            nameConverter: new SnakeToCamel()
+        );
+
+        self::assertEquals(new User('pfazzi', 'pfazzi@test.com', true), $user);
+    }
+
     public function test_it_maps_an_array_to_an_object(): void
     {
         $source = [
