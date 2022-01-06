@@ -288,4 +288,68 @@ class MapperTest extends TestCase
 
         self::assertEquals($target, new ClassWithProps('234', '5', '10'));
     }
+
+    public function test_maps_stuff_to_an_instance_with_name_converter(): void
+    {
+        $source = [
+            'one_one' => '234',
+            'two_two' => 5,
+        ];
+
+        $target = new AnotherClassWithProps(threeThree: '10');
+
+        $this->mapper->hydrate($source, $target, new SnakeToCamel());
+
+        self::assertEquals($target, new AnotherClassWithProps('234', '5', '10'));
+    }
+
+    public function test_it_doesnt_throws_error_if_source_property_does_not_exists_in_target(): void
+    {
+        self::expectNotToPerformAssertions();
+
+        $source = [
+            'doNotExists' => 'hello',
+        ];
+
+        $this->mapper->map($source, ClassWithProps::class);
+
+        $this->mapper->hydrate($source, new ClassWithProps());
+    }
+
+    public function test_it_attempt_to_convert_union_types_to_the_first_declared_type_except_for_null(): void
+    {
+        $source = [
+            'field' => 1,
+        ];
+
+        $target = new class() {
+            public function __construct(public string|bool|null $field = null)
+            {
+            }
+        };
+
+        $this->mapper->hydrate($source, $target);
+
+        self::assertEquals('1', $target->field);
+
+        $target = new class() {
+            public function __construct(public bool|string|null $field = null)
+            {
+            }
+        };
+
+        $this->mapper->hydrate($source, $target);
+
+        self::assertEquals(true, $target->field);
+
+        $target = new class() {
+            public function __construct(public null|bool|string $field = null)
+            {
+            }
+        };
+
+        $this->mapper->hydrate($source, $target);
+
+        self::assertEquals(true, $target->field);
+    }
 }

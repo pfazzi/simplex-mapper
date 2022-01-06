@@ -9,8 +9,6 @@ namespace Pfazzi\SimplexMapper;
  */
 class Mapper
 {
-    const SETTYPE_ALLOWED_VALUES = ['bool', 'boolean', 'int', 'integer', 'float', 'double', 'string', 'array', 'object', 'null'];
-
     public function hydrate(array|object $source, object $target, ?NameConverter $nameConverter = null): void
     {
         $assign = fn (string $prop, mixed $val): mixed => $this->$prop = $val;
@@ -24,6 +22,10 @@ class Mapper
 
             if ($nameConverter) {
                 $propertyName = $nameConverter->convert($propertyName);
+            }
+
+            if (!$targetClassRef->hasProperty($propertyName)) {
+                continue;
             }
 
             $value = $this->convertValueToTargetType($targetClassRef, $propertyName, $value);
@@ -59,6 +61,10 @@ class Mapper
                 $propertyName = $nameConverter->convert($propertyName);
             }
 
+            if (!$targetClassRef->hasProperty($propertyName)) {
+                continue;
+            }
+
             $value = $this->convertValueToTargetType($targetClassRef, $propertyName, $value);
 
             $assign->call($instance, $propertyName, $value);
@@ -71,10 +77,6 @@ class Mapper
     {
         if (\is_array($value) && class_exists($type)) {
             return $this->map($value, $type);
-        }
-
-        if (!in_array($type, self::SETTYPE_ALLOWED_VALUES)) {
-            throw new \RuntimeException("Unhandled type '$type'. Allowed types are: ".implode(', ', self::SETTYPE_ALLOWED_VALUES));
         }
 
         if (settype($value, $type)) {
