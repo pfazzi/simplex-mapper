@@ -11,10 +11,31 @@ class Mapper
 {
     const SETTYPE_ALLOWED_VALUES = ['bool', 'boolean', 'int', 'integer', 'float', 'double', 'string', 'array', 'object', 'null'];
 
+    public function hydrate(array|object $source, object $target, ?NameConverter $nameConverter = null): void
+    {
+        $assign = fn (string $prop, mixed $val): mixed => $this->$prop = $val;
+
+        $targetClassRef = new \ReflectionClass($target);
+
+        $sourceArray = $this->mapSourceToArray($source);
+
+        foreach ($sourceArray as $propertyName => $value) {
+            $this->assertPropertyNameIsString($propertyName);
+
+            if ($nameConverter) {
+                $propertyName = $nameConverter->convert($propertyName);
+            }
+
+            $value = $this->convertValueToTargetType($targetClassRef, $propertyName, $value);
+
+            $assign->call($target, $propertyName, $value);
+        }
+    }
+
     /**
      * @template T
      *
-     * @param class-string<T> $target
+     * @psalm-param class-string<T> $target
      *
      * @throws \ReflectionException
      *

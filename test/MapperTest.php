@@ -274,4 +274,18 @@ class MapperTest extends TestCase
 
         self::assertEquals(new Garage(new Alfa147()), $mapped);
     }
+
+    public function test_maps_stuff_to_an_instance(): void
+    {
+        $source = [
+            'one' => '234',
+            'two' => 5,
+        ];
+
+        $target = new ClassWithProps(three: '10');
+
+        $this->mapper->hydrate($source, $target);
+
+        self::assertEquals($target, new ClassWithProps('234', '5', '10'));
+    }
 }
