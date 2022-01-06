@@ -1,12 +1,12 @@
 # SimplexMapper
 
-A simple PHP library to map data from a source (object or array) to an object.
+A simple PHP library to transfer data from a source (object or array) to an object.
 
 ```php
 $dbData = [
     'username' => 'pfazzi',
-    'email_address' => 'pfazzi@test.com',
-    'is_enabled' => '1',
+    'emailAddress' => 'pfazzi@test.com',
+    'isEnabled' => '1',
 ];
 
 $mapper = new \Pfazzi\SimplexMapper\Mapper();
@@ -14,7 +14,6 @@ $mapper = new \Pfazzi\SimplexMapper\Mapper();
 $user = $mapper->map(
     source: $dbData, 
     target: User::class, 
-    nameConverter: new SnakeToCamel()
 );
 ```
 
