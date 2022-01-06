@@ -9,6 +9,9 @@ namespace Pfazzi\SimplexMapper;
  */
 class Mapper
 {
+    /**
+     * Hydrates an object instance with data from the source.
+     */
     public function hydrate(array|object $source, object $target, ?NameConverter $nameConverter = null): void
     {
         $assign = fn (string $prop, mixed $val): mixed => $this->$prop = $val;
@@ -35,6 +38,8 @@ class Mapper
     }
 
     /**
+     * Maps the source data to a new instance of the target class.
+     *
      * @template T of object
      *
      * @psalm-param class-string<T> $target
@@ -52,23 +57,7 @@ class Mapper
 
         $this->assignDefaultValuesToTargetObject($targetClassRef, $assign, $instance);
 
-        $sourceArray = $this->mapSourceToArray($source);
-
-        foreach ($sourceArray as $propertyName => $value) {
-            $this->assertPropertyNameIsString($propertyName);
-
-            if ($nameConverter) {
-                $propertyName = $nameConverter->convert($propertyName);
-            }
-
-            if (!$targetClassRef->hasProperty($propertyName)) {
-                continue;
-            }
-
-            $value = $this->convertValueToTargetType($targetClassRef, $propertyName, $value);
-
-            $assign->call($instance, $propertyName, $value);
-        }
+        $this->hydrate($source, $instance, $nameConverter);
 
         return $instance;
     }
