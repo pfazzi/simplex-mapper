@@ -18,6 +18,11 @@ $user = $mapper->map(
 );
 ```
 
+Are you looking for an easy way to convert an array to an object?  
+Do you want to map a DTO to a domain object?  
+Do you want to hydrate an object from an array?  
+Use SimplexMapper! 
+
 ## Features
 
 - Easy to use
