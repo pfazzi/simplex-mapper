@@ -5,7 +5,20 @@ declare(strict_types=1);
 namespace Pfazzi\SimplexMapper\Test;
 
 use Pfazzi\SimplexMapper\Mapper;
+use Pfazzi\SimplexMapper\PropNamesShouldBeEqual;
 use Pfazzi\SimplexMapper\SnakeToCamel;
+use Pfazzi\SimplexMapper\Test\Fixtures\Alfa147;
+use Pfazzi\SimplexMapper\Test\Fixtures\AnotherClassWithProps;
+use Pfazzi\SimplexMapper\Test\Fixtures\CarAndTruck;
+use Pfazzi\SimplexMapper\Test\Fixtures\ClassWithFields;
+use Pfazzi\SimplexMapper\Test\Fixtures\ClassWithFields81;
+use Pfazzi\SimplexMapper\Test\Fixtures\ClassWithProps;
+use Pfazzi\SimplexMapper\Test\Fixtures\DomainEntity;
+use Pfazzi\SimplexMapper\Test\Fixtures\Garage;
+use Pfazzi\SimplexMapper\Test\Fixtures\InfraEntity;
+use Pfazzi\SimplexMapper\Test\Fixtures\Money;
+use Pfazzi\SimplexMapper\Test\Fixtures\User;
+use Pfazzi\SimplexMapper\Test\Fixtures\Validation\UserDTO;
 use PHPUnit\Framework\TestCase;
 
 class MapperTest extends TestCase
@@ -368,5 +381,14 @@ class MapperTest extends TestCase
         $this->mapper->hydrate($source, $target);
 
         self::assertEquals(true, $target->field);
+    }
+
+    public function test_it_allows_some_sort_of_validation(): void
+    {
+        $dto = new UserDTO('pfazzi', 'test@random.com', true);
+
+        $validity = $this->mapper->validateMapping($dto, User::class, constraints: [new PropNamesShouldBeEqual()]);
+
+        self::assertTrue($validity);
     }
 }

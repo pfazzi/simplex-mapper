@@ -10,6 +10,33 @@ namespace Pfazzi\SimplexMapper;
 class Mapper
 {
     /**
+     * @param array|object|class-string $source
+     * @param object|class-string       $target
+     * @param list<Constraint>          $constraints
+     *
+     * @return array{valid: bool, violations: list<string>}|true
+     */
+    public function validateMapping(array|object|string $source, object|string $target, ?NameConverterPair $nameConverterPair = null, array $constraints = []): array|bool
+    {
+        /** @var list<string> $violations */
+        $violations = [];
+
+        foreach ($constraints as $constraint) {
+            $result = $constraint->isSatisfied($source, $target, $nameConverterPair);
+            if (true === $result) {
+                continue;
+            }
+            $violations = [...$violations, ...$result];
+        }
+
+        if (empty($violations)) {
+            return true;
+        }
+
+        return ['valid' => empty($violations), 'violations' => $violations];
+    }
+
+    /**
      * Hydrates an object instance with data from the source.
      */
     public function hydrate(array|object $source, object $target, ?NameConverter $nameConverter = null): void
